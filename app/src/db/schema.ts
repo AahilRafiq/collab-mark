@@ -2,23 +2,23 @@ import { serial ,pgTable, text, boolean ,integer, AnyPgColumn } from "drizzle-or
 
 export const Users = pgTable('Users', {
   id: serial('id').primaryKey(),
-  username: text('username'),
-  email: text('email'),
-  password: text('password'),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  password: text('password').notNull(),
 });
 
 export const Folders = pgTable('Folders', {
   id: serial('id').primaryKey(),
-  name: text('name'),
+  name: text('name').notNull(),
   parentFolder: integer('parentFolder').references(():AnyPgColumn => Folders.id),
-  ownerID: integer('ownerID').references(()=>Users.id),
+  ownerID: integer('ownerID').references(()=>Users.id).notNull(),
 });
 
 export const Documents = pgTable('Documents', {
   id: serial('id').primaryKey(),
-  name: text('name'),
+  name: text('name').notNull(),
   content:text('name'),
-  parentFolder: integer('parentFolder').references(()=>Folders.id),
-  public: boolean('public'),
-  ownerID: text('ownerID'),
+  parentFolder: integer('parentFolder').references(()=>Folders.id).notNull(),
+  public: boolean('public').notNull(),
+  ownerID: text('ownerID').notNull(),
 });
