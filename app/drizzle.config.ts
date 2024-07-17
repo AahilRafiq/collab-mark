@@ -1,12 +1,11 @@
-import { type Config } from "drizzle-kit";
-
-import { env } from "~/env";
-
-export default {
-  schema: "./src/server/db/schema.ts",
-  dialect: "postgresql",
+import 'dotenv/config'
+import { defineConfig } from "drizzle-kit";
+ 
+export default defineConfig({
+  schema: "./src/db/schema.ts",
+  out: "./drizzle",
+  dialect: 'postgresql',
   dbCredentials: {
-    url: env.DATABASE_URL,
-  },
-  tablesFilter: ["app_*"],
-} satisfies Config;
+    url: process.env.POSTGRES_URI || 'postgres://postgres:icode247@localhost:5432/collabmark',
+  }
+});
