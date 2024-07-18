@@ -9,6 +9,7 @@ import ShareModal from "@/components/editor/ShareModal";
 import Download from "@/components/editor/Download";
 import { CRDT, CRDTOperation, CRDTOperationType } from "@/lib/crdt/crdt";
 import { useSocket } from "@/hooks/useSocket";
+import Markdown from 'react-markdown'
 interface Props {
     userID: number;
 }
@@ -120,7 +121,7 @@ export default function PageContent({ userID }: Props) {
                         </TabsContent>
                         <TabsContent value="preview" className="p-4">
                             <div className="prose dark:prose-invert">
-                                <div>{markdown}</div>
+                                <Markdown>{markdown}</Markdown>
                             </div>
                         </TabsContent>
                     </Tabs>
@@ -136,7 +137,7 @@ export default function PageContent({ userID }: Props) {
                         </div>
                         <div className="p-4">
                             <div className="prose dark:prose-invert h-full overflow-auto">
-                                <div>{markdown}</div>
+                                <Markdown>{markdown}</Markdown>
                             </div>
                         </div>
                     </div>
