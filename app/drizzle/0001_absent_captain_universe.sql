@@ -1,0 +1,1 @@
+ALTER TABLE "Documents" ALTER COLUMN "parentFolder" DROP NOT NULL;

@@ -1,4 +1,4 @@
-import { serial ,pgTable, text, boolean ,integer, AnyPgColumn } from "drizzle-orm/pg-core";
+import { serial ,pgTable, text, boolean ,integer } from "drizzle-orm/pg-core";
 
 export const Users = pgTable('Users', {
   id: serial('id').primaryKey(),
@@ -17,8 +17,8 @@ export const Folders = pgTable('Folders', {
 export const Documents = pgTable('Documents', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
-  content: text('content'), // Changed from 'name' to 'content'
-  parentFolder: integer('parentFolder').references(() => Folders.id).notNull(),
+  content: text("content"),
+  parentFolder: integer('parentFolder').references(() => Folders.id),
   public: boolean('public').notNull(),
   ownerID: integer('ownerID').references(() => Users.id).notNull(), // Changed from text to integer and added reference
 });

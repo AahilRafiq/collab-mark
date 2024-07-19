@@ -7,7 +7,7 @@ export default function ({folderName , folderID}:{folderName:string , folderID:n
 
     return (
         <Link href={`/home/${folderID}`} className="bg-white dark:bg-gray-900 rounded-md shadow-sm p-4 flex items-center gap-2">
-            <FolderIcon className="w-5 h-5 text-yellow-500" />
+            <FolderIcon className="w-5 h-5 text-green-400 " />
             <span className="font-medium">{trimmedFolderName}</span>
         </Link>
     )

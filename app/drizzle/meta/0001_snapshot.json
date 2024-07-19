@@ -1,0 +1,184 @@
+{
+  "id": "47f5b6c5-16c2-42d5-873d-1ab8a40152c7",
+  "prevId": "a7c271a1-5594-4efb-8f06-e751a5ff54e3",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.Documents": {
+      "name": "Documents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parentFolder": {
+          "name": "parentFolder",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "public": {
+          "name": "public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ownerID": {
+          "name": "ownerID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Documents_parentFolder_Folders_id_fk": {
+          "name": "Documents_parentFolder_Folders_id_fk",
+          "tableFrom": "Documents",
+          "tableTo": "Folders",
+          "columnsFrom": [
+            "parentFolder"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Documents_ownerID_Users_id_fk": {
+          "name": "Documents_ownerID_Users_id_fk",
+          "tableFrom": "Documents",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "ownerID"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Folders": {
+      "name": "Folders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parentFolder": {
+          "name": "parentFolder",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ownerID": {
+          "name": "ownerID",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Folders_parentFolder_Folders_id_fk": {
+          "name": "Folders_parentFolder_Folders_id_fk",
+          "tableFrom": "Folders",
+          "tableTo": "Folders",
+          "columnsFrom": [
+            "parentFolder"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Folders_ownerID_Users_id_fk": {
+          "name": "Folders_ownerID_Users_id_fk",
+          "tableFrom": "Folders",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "ownerID"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.Users": {
+      "name": "Users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

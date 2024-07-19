@@ -6,6 +6,7 @@ import Link from "next/link"
 import NewFolderModal from "@/components/files/NewFolderModal"
 import { getDocuments } from "@/lib/helpers/getDocuments"
 import { getFolders } from "@/lib/helpers/getFolders"
+import NewDocumentModal from "@/components/files/NewDocumentModal"
 
 interface IProps {
     params: {
@@ -32,6 +33,7 @@ export default async function ({params}:IProps) {
                         </Button>
                     </Link>
                     <NewFolderModal parentFolderID={params.folderID}/>
+                    <NewDocumentModal parentFolderID={params.folderID}/>
                     {/* <UploadFileModal folderID={params.folderID} groupID={params.groupID}/> */}
 
                 </div>
