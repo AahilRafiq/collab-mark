@@ -111,7 +111,7 @@ export default function PageContent({ userID }: Props) {
                             <TabsTrigger value="editor">Editor</TabsTrigger>
                             <TabsTrigger value="preview">Preview</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="editor" className="p-4 px-4">
+                        <TabsContent value="editor" className="p-4 px-4 h-full">
                             <Textarea
                                 value={markdown}
                                 onChange={handleMarkdownChange}

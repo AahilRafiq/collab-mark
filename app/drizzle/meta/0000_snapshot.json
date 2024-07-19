@@ -1,5 +1,5 @@
 {
-  "id": "e266bd10-491b-41c5-b412-74810613b8aa",
+  "id": "a7c271a1-5594-4efb-8f06-e751a5ff54e3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -18,25 +18,31 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
           "notNull": false
         },
         "parentFolder": {
           "name": "parentFolder",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "public": {
           "name": "public",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "ownerID": {
           "name": "ownerID",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -47,6 +53,19 @@
           "tableTo": "Folders",
           "columnsFrom": [
             "parentFolder"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Documents_ownerID_Users_id_fk": {
+          "name": "Documents_ownerID_Users_id_fk",
+          "tableFrom": "Documents",
+          "tableTo": "Users",
+          "columnsFrom": [
+            "ownerID"
           ],
           "columnsTo": [
             "id"
@@ -72,7 +91,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "parentFolder": {
           "name": "parentFolder",
@@ -84,7 +103,7 @@
           "name": "ownerID",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -129,23 +148,23 @@
           "primaryKey": true,
           "notNull": true
         },
-        "username": {
-          "name": "username",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},

@@ -10,15 +10,15 @@ export const Users = pgTable('Users', {
 export const Folders = pgTable('Folders', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
-  parentFolder: integer('parentFolder').references(():AnyPgColumn => Folders.id),
-  ownerID: integer('ownerID').references(()=>Users.id).notNull(),
+  parentFolder: integer("parentFolder").references(() => Folders.id),
+  ownerID: integer('ownerID').references(() => Users.id).notNull(),
 });
 
 export const Documents = pgTable('Documents', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
-  content:text('name'),
-  parentFolder: integer('parentFolder').references(()=>Folders.id).notNull(),
+  content: text('content'), // Changed from 'name' to 'content'
+  parentFolder: integer('parentFolder').references(() => Folders.id).notNull(),
   public: boolean('public').notNull(),
-  ownerID: text('ownerID').notNull(),
+  ownerID: integer('ownerID').references(() => Users.id).notNull(), // Changed from text to integer and added reference
 });
