@@ -9,9 +9,9 @@ import ShareModal from "@/components/editor/ShareModal";
 import Download from "@/components/editor/Download";
 import { CRDT, CRDTOperation, CRDTOperationType } from "@/lib/crdt/crdt";
 import { useSocket } from "@/hooks/useSocket";
-import Markdown from 'react-markdown'
+import Markdown from "react-markdown";
 import { msgType } from "@/types/messageTypeEnum";
-import { handleSendInfo , handleConnection} from "@/lib/socket.io/helpers";
+import { handleSendInfo, handleConnection } from "@/lib/socket.io/helpers";
 import { useToast } from "@/components/ui/use-toast";
 import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
 interface Props {
@@ -21,24 +21,28 @@ interface Props {
 }
 
 interface ConnectedUser {
-    userID: number,
-    username: string
+    userID: number;
+    username: string;
 }
 
-export default function PageContent({ userID , documentID,username}: Props) {
-    const {toast} = useToast()
+export default function PageContent({ userID, documentID, username }: Props) {
+    const { toast } = useToast();
     const [mode, setMode] = useState("single");
     const [markdown, setMarkdown] = useState("");
     const [crdt] = useState(new CRDT(userID));
     const [UID] = useState(Math.floor(Math.random() * 100000000));
-    const [connectedUsers,setConnectedUsers] = useState<ConnectedUser[]>([])
+    const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
     const socket = useSocket();
 
     // SOCKET.IO
     useEffect(() => {
         socket.connect();
-        socket.on('connect',()=>handleConnection(socket , documentID))
-        socket.on(msgType.sendInfo , () => handleSendInfo(socket,userID,username,documentID))
+        socket.on("connect", () =>
+            handleConnection(socket, userID, documentID)
+        );
+        socket.on(msgType.sendInfo, () =>
+            handleSendInfo(socket, userID, username, documentID)
+        );
         socket.on(msgType.message, (msg) => {
             const operation: CRDTOperation = JSON.parse(msg);
 
@@ -50,16 +54,47 @@ export default function PageContent({ userID , documentID,username}: Props) {
 
             setMarkdown(crdt.getDocument());
         });
-        socket.on(msgType.receiveInfo , (userID , username) => {         
-            displayNormalToast(toast , 'User connected' , `User ${username} is in the room!`)
-            setConnectedUsers([...connectedUsers , {userID , username}])
-        })
+        socket.on(msgType.receiveInfo, (userID, username) => {
+            displayNormalToast(
+                toast,
+                "User connected",
+                `User ${username} is in the room!`
+            );
+            setConnectedUsers((prevUsers) => {
+                const isPresent = prevUsers.some(
+                    (user) => user.userID === userID
+                );
+                if (!isPresent) {
+                    return [...prevUsers, { userID, username }];
+                }
+                return prevUsers;
+            });
+        });
+        socket.on(msgType.leaveRoom, (userID) => {
+            setConnectedUsers((prevUsers) => {
+                const userLeaving = prevUsers.find(
+                    (user) => user.userID === userID
+                );
+                if (userLeaving) {
+                    displayNormalToast(
+                        toast,
+                        "User disconnected",
+                        `User ${userLeaving.username} left the room!`
+                    );
+                }
+
+                const newList = prevUsers.filter(
+                    (user) => user.userID !== userID
+                );
+                return newList;
+            });
+        });
 
         return () => {
             socket.off(msgType.sendInfo);
             socket.off(msgType.message);
-            socket.off(msgType.receiveInfo)
-            socket.off('connect')
+            socket.off(msgType.receiveInfo);
+            socket.off("connect");
             socket.disconnect();
         };
     }, []);
@@ -82,7 +117,8 @@ export default function PageContent({ userID , documentID,username}: Props) {
             const startIndex = selectionStart - insertedLength;
             const op = crdt.insertStringLocal(insertedText, startIndex, UID);
 
-            if (socket.connected) socket.emit(msgType.message, JSON.stringify(op),documentID);
+            if (socket.connected)
+                socket.emit(msgType.message, JSON.stringify(op), documentID);
         } else {
             const deletedLength = oldLength - newLength;
             const op = crdt.deleteStringLocal(
@@ -91,7 +127,8 @@ export default function PageContent({ userID , documentID,username}: Props) {
                 UID
             );
 
-            if (socket.connected) socket.emit(msgType.message, JSON.stringify(op),documentID);
+            if (socket.connected)
+                socket.emit(msgType.message, JSON.stringify(op), documentID);
         }
 
         setMarkdown(crdt.getDocument());
@@ -116,7 +153,7 @@ export default function PageContent({ userID , documentID,username}: Props) {
                 </div>
                 <div className="flex items-center gap-4">
                     {/* CONNECTED USERS LIST */}
-                    <ConnectedUsersDropdown users={connectedUsers}/>
+                    <ConnectedUsersDropdown users={connectedUsers} />
 
                     {/* Save and download */}
                     <Button variant="outline">Save</Button>

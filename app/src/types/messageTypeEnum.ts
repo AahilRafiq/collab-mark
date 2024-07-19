@@ -3,5 +3,6 @@ export enum msgType {
     joinRoom = 'JOIN_ROOM',
     sendInfo = 'SEND_INFO',
     takeInfo = 'TAKE_INFO',
-    receiveInfo = 'RECEIVE_INFO'
+    receiveInfo = 'RECEIVE_INFO',
+    leaveRoom = 'LEAVE_ROOM',
 }

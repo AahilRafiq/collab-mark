@@ -1,10 +1,14 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-// import { RoomInfoManager } from "./lib/RoomManager";
 import { msgType } from "./types/messageTypeEnum";
 
+interface UserRoomInfo {
+    userID: string;
+    roomID: string;
+}
+
+const socketRoomMap = new Map<string, UserRoomInfo>();
 const server = createServer();
-// const roomManager = RoomInfoManager.getInstance();
 const io = new Server(server, {
     cors: {
         origin: "*",
@@ -18,13 +22,12 @@ io.on("connection", (socket) => {
 
     socket.on(msgType.message, (msg , roomID) => {
         // Broadcast to all execpt sender
-        console.log('message came');
         socket.broadcast.to(roomID).emit(msgType.message, msg);
     });
 
-    socket.on(msgType.joinRoom, (roomID:string) => {
-        // roomManager.joinRoomList(userID, username, roomID);
+    socket.on(msgType.joinRoom, (userID:string , roomID:string) => {
         socket.join(roomID)
+        socketRoomMap.set(socket.id, { userID , roomID });
         socket.to(roomID).emit(msgType.sendInfo);
         socket.emit(msgType.sendInfo)
     });
@@ -34,6 +37,8 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
+        const {userID , roomID} = socketRoomMap.get(socket.id)!;
+        socket.broadcast.to(roomID).emit(msgType.leaveRoom, userID);
         console.log("A user disconnected");
     });
 });
