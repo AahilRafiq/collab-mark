@@ -10,22 +10,36 @@ import Download from "@/components/editor/Download";
 import { CRDT, CRDTOperation, CRDTOperationType } from "@/lib/crdt/crdt";
 import { useSocket } from "@/hooks/useSocket";
 import Markdown from 'react-markdown'
+import { msgType } from "@/types/messageTypeEnum";
+import { handleSendInfo , handleConnection} from "@/lib/socket.io/helpers";
+import { useToast } from "@/components/ui/use-toast";
+import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
 interface Props {
     userID: number;
+    username: string;
     documentID: number;
 }
 
-export default function PageContent({ userID , documentID}: Props) {
+interface ConnectedUser {
+    userID: number,
+    username: string
+}
+
+export default function PageContent({ userID , documentID,username}: Props) {
+    const {toast} = useToast()
     const [mode, setMode] = useState("single");
     const [markdown, setMarkdown] = useState("");
     const [crdt] = useState(new CRDT(userID));
     const [UID] = useState(Math.floor(Math.random() * 100000000));
+    const [connectedUsers,setConnectedUsers] = useState<ConnectedUser[]>([])
     const socket = useSocket();
 
     // SOCKET.IO
     useEffect(() => {
         socket.connect();
-        socket.on("message", (msg) => {
+        socket.on('connect',()=>handleConnection(socket , documentID))
+        socket.on(msgType.sendInfo , () => handleSendInfo(socket,userID,username,documentID))
+        socket.on(msgType.message, (msg) => {
             const operation: CRDTOperation = JSON.parse(msg);
 
             if (operation.operation === CRDTOperationType.insert) {
@@ -36,9 +50,16 @@ export default function PageContent({ userID , documentID}: Props) {
 
             setMarkdown(crdt.getDocument());
         });
+        socket.on(msgType.receiveInfo , (userID , username) => {         
+            displayNormalToast(toast , 'User connected' , `User ${username} is in the room!`)
+            setConnectedUsers([...connectedUsers , {userID , username}])
+        })
 
         return () => {
-            socket.off("message");
+            socket.off(msgType.sendInfo);
+            socket.off(msgType.message);
+            socket.off(msgType.receiveInfo)
+            socket.off('connect')
             socket.disconnect();
         };
     }, []);
@@ -61,7 +82,7 @@ export default function PageContent({ userID , documentID}: Props) {
             const startIndex = selectionStart - insertedLength;
             const op = crdt.insertStringLocal(insertedText, startIndex, UID);
 
-            if (socket.connected) socket.emit("message", JSON.stringify(op));
+            if (socket.connected) socket.emit(msgType.message, JSON.stringify(op),documentID);
         } else {
             const deletedLength = oldLength - newLength;
             const op = crdt.deleteStringLocal(
@@ -70,7 +91,7 @@ export default function PageContent({ userID , documentID}: Props) {
                 UID
             );
 
-            if (socket.connected) socket.emit("message", JSON.stringify(op));
+            if (socket.connected) socket.emit(msgType.message, JSON.stringify(op),documentID);
         }
 
         setMarkdown(crdt.getDocument());
@@ -95,7 +116,7 @@ export default function PageContent({ userID , documentID}: Props) {
                 </div>
                 <div className="flex items-center gap-4">
                     {/* CONNECTED USERS LIST */}
-                    <ConnectedUsersDropdown />
+                    <ConnectedUsersDropdown users={connectedUsers}/>
 
                     {/* Save and download */}
                     <Button variant="outline">Save</Button>
