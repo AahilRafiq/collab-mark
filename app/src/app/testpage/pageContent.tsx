@@ -77,7 +77,7 @@ export default function PageContent({ userID }: Props) {
 
     return (
         <div className="flex flex-col h-screen">
-            <header className="bg-background border-b px-4 py-2 flex items-center justify-between">
+            <header className="bg-background border-b px-4 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button
                         variant={mode === "single" ? "ghost" : "outline"}
@@ -111,7 +111,7 @@ export default function PageContent({ userID }: Props) {
                             <TabsTrigger value="editor">Editor</TabsTrigger>
                             <TabsTrigger value="preview">Preview</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="editor" className="p-4">
+                        <TabsContent value="editor" className="p-4 px-4">
                             <Textarea
                                 value={markdown}
                                 onChange={handleMarkdownChange}
