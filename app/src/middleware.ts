@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server"
-import { authMiddleware } from "./middlewars/authMiddleware"
-import { protectRoute } from "./middlewars/protectedRouteMiddleware"
+import { authMiddleware } from "@/middlewares/authMiddleware"
+import { protectRoute } from "@/middlewares/protectedRouteMiddleware"
 
 export function middleware(req: NextRequest) {
     const route = req.nextUrl.pathname

@@ -3,6 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function authMiddleware(req: NextRequest) {
   if (cookies().get("auth_token") !== undefined) {
-    return NextResponse.redirect(new URL("/home", req.url))
+    return NextResponse.redirect(new URL("/home/0", req.url))
   }
 }
