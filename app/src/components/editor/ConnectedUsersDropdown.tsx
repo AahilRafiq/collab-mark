@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon } from "lucide-react";
 import { Button } from "../ui/button";
+import { UserIcon } from "lucide-react";
 
 interface ConnectedUser {
     userID: number,
@@ -27,7 +28,8 @@ export default function ({ users }: Props) {
             <DropdownMenuContent align="end">
                 {users.map((user) => {
                     return (
-                        <DropdownMenuItem key={Math.floor(Math.random()*10000)}>
+                        <DropdownMenuItem className="min-w-40" key={Math.floor(Math.random()*10000)}>
+                            <UserIcon className="w-4 h-4 mx-2 font-extrabold" />
                             <span>{user.username}</span>
                         </DropdownMenuItem>
                     );
