@@ -21,7 +21,7 @@ export default function () {
     const res = await SignUp(username,email, password,confirmPass);
 
     if(res.success) {
-      router.push("/home");
+      router.push("/home/0");
     } else {
       displayErrorToast(toast ,res.message!)
     }

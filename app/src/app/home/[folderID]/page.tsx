@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button"
-import { HomeIcon, UploadIcon } from "lucide-react"
+import { HomeIcon } from "lucide-react"
 import Document from "@/components/files/Document"
 import Folder from "@/components/files/Folder"
 import Link from "next/link"
 import NewFolderModal from "@/components/files/NewFolderModal"
 import { getDocuments } from "@/lib/helpers/getDocuments"
 import { getFolders } from "@/lib/helpers/getFolders"
+import { cookies } from "next/headers"
 import NewDocumentModal from "@/components/files/NewDocumentModal"
+import { verifyToken } from "@/lib/auth/auth"
 
 interface IProps {
     params: {
@@ -16,8 +18,11 @@ interface IProps {
 
 export default async function ({params}:IProps) {
 
-    const documents = await getDocuments(params.folderID)
-    const folders = await getFolders(params.folderID)
+    const token = cookies().get('auth_token')
+    if(!token) throw new Error("Unauthorized")
+    const userID = parseInt(verifyToken(token.value).id)
+    const documents = await getDocuments(params.folderID , userID)
+    const folders = await getFolders(params.folderID , userID)
 
     return (
         <div className="flex flex-col h-screen">
@@ -34,7 +39,6 @@ export default async function ({params}:IProps) {
                     </Link>
                     <NewFolderModal parentFolderID={params.folderID}/>
                     <NewDocumentModal parentFolderID={params.folderID}/>
-                    {/* <UploadFileModal folderID={params.folderID} groupID={params.groupID}/> */}
 
                 </div>
                 <div className="flex items-center gap-2">

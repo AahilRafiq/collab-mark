@@ -18,7 +18,7 @@ export default function () {
   async function handleSignIn() {
     const res = await SignIn(username, password);
     if(res.success) {
-      router.push("/home");
+      router.push("/home/0");
     } else {
       displayErrorToast(toast, res.message!);
     }

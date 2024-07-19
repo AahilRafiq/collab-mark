@@ -19,6 +19,7 @@ export async function createNewDocument(documentName: string , parentFolderID: n
             ownerID: userID,
             parentFolder: parentFolderID,
             public: true,
+            content: ''
         })
 
         return actionResponseObj(true)

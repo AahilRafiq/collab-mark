@@ -16,9 +16,9 @@ export const Folders = pgTable('Folders', {
 
 export const Documents = pgTable('Documents', {
   id: serial('id').primaryKey(),
-  name: text('name').notNull(),
+  name: text('name'),
   content: text("content"),
   parentFolder: integer('parentFolder').references(() => Folders.id),
-  public: boolean('public').notNull(),
-  ownerID: integer('ownerID').references(() => Users.id).notNull(), // Changed from text to integer and added reference
+  public: boolean('public'),
+  ownerID: integer('ownerID').references(() => Users.id), // Changed from text to integer and added reference
 });
