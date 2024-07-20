@@ -50,15 +50,16 @@ export default function Component() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <img
-                src="/placeholder.svg"
-                width="550"
-                height="310"
+            <div className="mx-auto flex flex-row flex-wrap max-w-6xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
+              <Image
+                src="/editor_cover.png"
+                width="600"
+                height="400"
                 alt="Image"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
+                unoptimized
+                className="mx-auto max-w-[700px] rounded-md object-cover object-center sm:w-full lg:order-last w-full"
               />
-              <div className="flex flex-col justify-center space-y-4">
+              <div className="flex flex-col max-w-[25rem] justify-center space-y-4">
                 <ul className="grid gap-6">
                   <li>
                     <div className="grid gap-1">
@@ -96,15 +97,16 @@ export default function Component() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <img
-                src="/placeholder.svg"
-                width="550"
-                height="310"
+            <div className="mx-auto flex flex-row flex-wrap max-w-6xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
+            <Image
+                src="/files_cover.png"
+                width="600"
+                height="400"
                 alt="Image"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
+                unoptimized
+                className="mx-auto max-w-[700px] rounded-md object-cover object-center sm:w-full lg:order-last w-full"
               />
-              <div className="flex flex-col justify-center space-y-4">
+              <div className="flex max-w-96 flex-col justify-center space-y-4">
                 <ul className="grid gap-6">
                   <li>
                     <div className="grid gap-1">
@@ -126,57 +128,6 @@ export default function Component() {
                     <div className="grid gap-1">
                       <h3 className="text-xl font-bold">Shared Folders</h3>
                       <p className="text-muted-foreground">Share folders with your team to collaborate on projects.</p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Collaboration Limits</div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Collaborate with up to 10 Users</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  CollabMark supports up to 10 concurrent users editing the same markdown file, making it perfect for
-                  small to medium- sized teams.
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <img
-                src="/placeholder.svg"
-                width="550"
-                height="310"
-                alt="Image"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-              />
-              <div className="flex flex-col justify-center space-y-4">
-                <ul className="grid gap-6">
-                  <li>
-                    <div className="grid gap-1">
-                      <h3 className="text-xl font-bold">Scalable Collaboration</h3>
-                      <p className="text-muted-foreground">
-                        CollabMark can handle up to 10 users editing the same markdown file simultaneously.
-                      </p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="grid gap-1">
-                      <h3 className="text-xl font-bold">Seamless Synchronization</h3>
-                      <p className="text-muted-foreground">
-                        Changes made by any user are instantly reflected in the document for all collaborators.
-                      </p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="grid gap-1">
-                      <h3 className="text-xl font-bold">Efficient Workflow</h3>
-                      <p className="text-muted-foreground">
-                        Collaborate on your markdown files with your team without the need for constant communication.
-                      </p>
                     </div>
                   </li>
                 </ul>
