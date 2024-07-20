@@ -8,15 +8,19 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { FullscreenSpinner } from "@/components/ui/loading";
 
 export default function () {
   const router = useRouter();
   const {toast} = useToast()
   const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
 
   async function handleSignIn() {
+    setLoading(true);
     const res = await SignIn(username, password);
+    setLoading(false);
     if(res.success) {
       router.push("/home/0");
     } else {
@@ -24,6 +28,9 @@ export default function () {
     }
   }
 
+  if(loading) {
+    return <FullscreenSpinner />
+  }
   return (
     <>
       <div className="flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8">

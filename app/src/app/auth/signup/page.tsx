@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { displayErrorToast } from "@/lib/helpers/apiRequestHelpers";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { FullscreenSpinner } from "@/components/ui/loading";
 
 export default function () {
   const router = useRouter();
@@ -16,9 +17,12 @@ export default function () {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass,setConfirmPass] = useState("")
+  const [loading, setLoading] = useState(false);
 
   async function handleSignUp() {
+    setLoading(true);
     const res = await SignUp(username,email, password,confirmPass);
+    setLoading(false);
 
     if(res.success) {
       router.push("/home/0");
@@ -27,6 +31,9 @@ export default function () {
     }
   }
 
+  if(loading) {
+    return <FullscreenSpinner />
+  }
   return (
     <>
       <div className="flex items-center justify-center pt-12 px-4 sm:px-6 lg:px-8">

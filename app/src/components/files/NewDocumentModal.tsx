@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { displayToast } from "@/lib/helpers/actionResHelpers"
 import { createNewDocument } from "@/actions/files/newDocument"
 import { useRouter } from "next/navigation"
+import { FullscreenSpinner } from "../ui/loading"
 
 interface IProps {
     parentFolderID: string
@@ -29,10 +30,13 @@ export default function ({parentFolderID}:IProps) {
     const {toast} = useToast()
     const router = useRouter()
     const [documentName, setDocumentName] = useState("")
+    const [loading, setLoading] = useState(false)
 
     async function handleCreateDocument(){
         const pfid = parseInt(parentFolderID) === 0 ? null : parseInt(parentFolderID)
+        setLoading(true)
         const res = await createNewDocument(documentName , pfid)
+        setLoading(false)
         if(res.success){
             router.refresh()
         }else{
@@ -40,6 +44,9 @@ export default function ({parentFolderID}:IProps) {
         }
     }
 
+    if(loading) {
+        return <FullscreenSpinner />
+    }
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
