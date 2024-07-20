@@ -38,6 +38,7 @@ export default function PageContent({ userID, documentID, username , token }: Pr
     const [UID] = useState(Math.floor(Math.random() * 100000000));
     const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
     const socket = useSocket(token);
+    const [isSocketConnected, setIsSocketConnected] = useState(false);
     const router = useRouter();
 
     // FETCH DOCUMENT
@@ -58,10 +59,11 @@ export default function PageContent({ userID, documentID, username , token }: Pr
 
     // SOCKET.IO
     useEffect(() => {
-        socket.connect();
-        socket.on("connect", () =>
+        if(!socket.connected) socket.connect();
+        socket.on("connect", () =>{
+            setIsSocketConnected(true);
             handleConnection(socket, userID, documentID)
-        );
+    });
         socket.on(msgType.sendInfo, () =>
             handleSendInfo(socket, userID, username, documentID)
         );
@@ -130,7 +132,9 @@ export default function PageContent({ userID, documentID, username , token }: Pr
             socket.off(msgType.leaveRoom);
             socket.off(msgType.updateDoc);
             socket.off("connect");
-            socket.disconnect();
+            if(socket.connected) {socket.disconnect()
+            setIsSocketConnected(false)
+            }
         };
     }, []);
 
@@ -180,7 +184,7 @@ export default function PageContent({ userID, documentID, username , token }: Pr
         }
     }
 
-    // if(!socket.connected) return <div>Connecting To server...</div>
+    if(!isSocketConnected) return <div className="p-4">Connecting To server...</div>
     return (
         <div className="flex flex-col h-screen">
             <header className="bg-background border-b px-4 py-4 flex items-center justify-between">

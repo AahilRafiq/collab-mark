@@ -27,6 +27,7 @@ io.use((socket, next) => {
         socket.data = data;
         next();
     } catch (err) {
+        console.log(err);
         return next(new Error("Authentication error"));
     }
 })
