@@ -10,6 +10,8 @@ export async function createNewDocument(documentName: string , parentFolderID: n
     
     const token = cookies().get('auth_token')
     if(!token) return actionResponseObj(false,'Unauthorized')
+
+    if(!documentName || documentName.length < 1) return actionResponseObj(false,'Document name is required')
     
     try {
         const userID: number = verifyToken(token.value).id

@@ -10,6 +10,8 @@ export async function createNewFolder(folderName: string , parentFolderID: numbe
     
     const token = cookies().get('auth_token')
     if(!token) return actionResponseObj(false,'Unauthorized')
+
+    if(!folderName || folderName.length < 1) return actionResponseObj(false,'Folder name is required')
     
     try {
         const userID: number = verifyToken(token.value).id
