@@ -14,6 +14,8 @@ import { msgType } from "@/types/messageTypeEnum";
 import { handleSendInfo, handleConnection } from "@/lib/socket.io/helpers";
 import { useToast } from "@/components/ui/use-toast";
 import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
+import { getDocument } from "@/actions/document/getDocument";
+import { saveDocument } from "@/actions/document/saveDocument";
 interface Props {
     userID: number;
     username: string;
@@ -33,6 +35,21 @@ export default function PageContent({ userID, documentID, username }: Props) {
     const [UID] = useState(Math.floor(Math.random() * 100000000));
     const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
     const socket = useSocket();
+
+    // FETCH DOCUMENT
+    useEffect(() => {
+        async function fetchDocument() {
+            const res = await getDocument(documentID);
+            if (res.success) {
+                setMarkdown(res.res);
+                crdt.initDocument(res.res)
+            } else {
+                displayNormalToast(toast, "Error", res.message);
+            }
+        }
+
+        fetchDocument();
+    }, []);
 
     // SOCKET.IO
     useEffect(() => {
@@ -90,10 +107,23 @@ export default function PageContent({ userID, documentID, username }: Props) {
             });
         });
 
+        socket.on(msgType.updateDoc, () => {
+            getDocument(documentID).then((res) => {
+                if (res.success) {
+                    setMarkdown(res.res);
+                    crdt.initDocument(res.res)
+                } else {
+                    displayNormalToast(toast, "Error", res.message);
+                }
+            });
+        })
+
         return () => {
             socket.off(msgType.sendInfo);
             socket.off(msgType.message);
             socket.off(msgType.receiveInfo);
+            socket.off(msgType.leaveRoom);
+            socket.off(msgType.updateDoc);
             socket.off("connect");
             socket.disconnect();
         };
@@ -134,6 +164,18 @@ export default function PageContent({ userID, documentID, username }: Props) {
         setMarkdown(crdt.getDocument());
     }
 
+    async function handleSave() {
+        const res = await saveDocument(markdown , documentID);
+        if (res.success) {
+            displayNormalToast(toast,'Save successfully', res.message)
+            socket.emit(msgType.updateDoc, documentID);
+            crdt.initDocument(markdown)
+        } else {
+            displayNormalToast(toast,'Error', res.message)
+        }
+    }
+
+    // if(!socket.connected) return <div>Connecting To server...</div>
     return (
         <div className="flex flex-col h-screen">
             <header className="bg-background border-b px-4 py-4 flex items-center justify-between">
@@ -156,7 +198,7 @@ export default function PageContent({ userID, documentID, username }: Props) {
                     <ConnectedUsersDropdown users={connectedUsers} />
 
                     {/* Save and download */}
-                    <Button variant="outline">Save</Button>
+                    <Button onClick={handleSave} variant="outline">Save</Button>
                     <Download markdown={markdown} />
 
                     {/* SHARE MODAL */}

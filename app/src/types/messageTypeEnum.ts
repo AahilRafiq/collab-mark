@@ -5,4 +5,5 @@ export enum msgType {
     takeInfo = 'TAKE_INFO',
     receiveInfo = 'RECEIVE_INFO',
     leaveRoom = 'LEAVE_ROOM',
+    updateDoc = 'UPDATE_DOC',
 }

@@ -36,6 +36,10 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomID).emit(msgType.receiveInfo,userID , username)
     })
 
+    socket.on(msgType.updateDoc, (roomID: string) => {
+        socket.broadcast.to(roomID).emit(msgType.updateDoc);
+    })
+
     socket.on("disconnect", () => {
         const {userID , roomID} = socketRoomMap.get(socket.id)!;
         socket.broadcast.to(roomID).emit(msgType.leaveRoom, userID);

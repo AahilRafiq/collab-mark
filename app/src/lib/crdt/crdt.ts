@@ -3,12 +3,12 @@ import { generateKeyBetween, generateNKeysBetween } from "fractional-indexing";
 export type CRDTOperation = {
     operation: CRDTOperationType;
     charOps: CharOperation[];
-    userID: number;
+    UID: number;
 };
 
 export type CharOperation = {
     value?: string;
-    userID?: number;
+    UID?: number;
     identifier: string;
 };
 
@@ -22,28 +22,28 @@ class Char {
     identifier: string;
     next: Char | null;
     prev: Char | null;
-    userID: number;
+    UID: number;
 
-    constructor(identifier: string, value: string, userID: number) {
+    constructor(identifier: string, value: string, UID: number) {
         this.identifier = identifier;
         this.value = value;
         this.next = null;
         this.prev = null;
-        this.userID = userID;
+        this.UID = UID;
     }
 }
 
 export class CRDT {
     BOF: Char;
 
-    constructor(userID: number) {
-        this.BOF = new Char(generateKeyBetween(null, null), "BOF", userID);
+    constructor(UID: number) {
+        this.BOF = new Char(generateKeyBetween(null, null), "BOF", UID);
     }
 
     insertStringLocal(
         value: string,
         index: number,
-        userID: number
+        UID: number
     ): CRDTOperation {
         let curr = this.BOF;
         for (let i = 0; i < index && curr.next; i++) {
@@ -59,7 +59,7 @@ export class CRDT {
         );
 
         for (let i = 0; i < value.length; i++) {
-            const newChar = new Char(keys[i], value[i], userID);
+            const newChar = new Char(keys[i], value[i], UID);
             newChar.prev = curr;
             curr.next = newChar;
             curr = newChar;
@@ -75,8 +75,10 @@ export class CRDT {
             };
         });
 
-        return { charOps, operation: CRDTOperationType.insert, userID };
+        return { charOps, operation: CRDTOperationType.insert, UID };
     }
+
+    
 
     insertStringRemote(ops: CRDTOperation) {
         let curr = this.BOF;
@@ -84,7 +86,7 @@ export class CRDT {
         if (ops.charOps.length === 0) return;
 
         const startingIdentifer = ops.charOps[0].identifier;
-        const remoteUserID = ops.userID;
+        const remoteUserID = ops.UID;
         while (curr.next && curr.next.identifier < startingIdentifer) {
             curr = curr.next;
         }
@@ -92,7 +94,7 @@ export class CRDT {
         while (
             curr.next &&
             curr.next.identifier == startingIdentifer &&
-            curr.next.userID < remoteUserID
+            curr.next.UID < remoteUserID
         ) {
             curr = curr.next;
         }
@@ -115,7 +117,7 @@ export class CRDT {
         }
     }
 
-    deleteStringLocal(index: number, length: number, userID: number) {
+    deleteStringLocal(index: number, length: number, UID: number) {
         let curr = this.BOF;
         for (let i = 0; i < index && curr.next; i++) {
             curr = curr.next;
@@ -126,7 +128,7 @@ export class CRDT {
         for (let i = 0; i < length && endingChar; i++) {
             deleteIdentifiers.push({
                 identifier: endingChar.identifier,
-                userID: endingChar.userID,
+                UID: endingChar.UID,
             });
             endingChar = endingChar.next;
         }
@@ -137,7 +139,7 @@ export class CRDT {
         const operation: CRDTOperation = {
             operation: CRDTOperationType.delete,
             charOps: deleteIdentifiers,
-            userID, // not required
+            UID, // not required
         };
 
         return operation;
@@ -152,7 +154,7 @@ export class CRDT {
             const charOp = charOps[deleteIndex];
             if (
                 curr.identifier === charOp.identifier &&
-                curr.userID === charOp.userID
+                curr.UID === charOp.UID
             ) {
                 const nextChar: Char | null = curr.next;
                 if (curr.next) curr.next.prev = curr.prev;
@@ -166,6 +168,20 @@ export class CRDT {
 
         if (deleteIndex < charOps.length) {
             throw new Error("Remote characters deletion could not be complete");
+        }
+    }
+
+    initDocument(value: string): void {
+        this.BOF.next = null;    
+        let curr = this.BOF;
+    
+        const keys = generateNKeysBetween(this.BOF.identifier, null, value.length);
+    
+        for (let i = 0; i < value.length; i++) {
+            const newChar = new Char(keys[i], value[i], 0);
+            curr.next = newChar;
+            newChar.prev = curr;
+            curr = newChar;
         }
     }
 
