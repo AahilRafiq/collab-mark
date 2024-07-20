@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getFirstRecord } from "@/db/getFirstRecord";
 import { generateToken } from "@/lib/auth/auth";
+import { comparePassword } from "@/lib/auth/hashPassword";
 
 export async function SignIn(
     username: string,
@@ -17,7 +18,7 @@ export async function SignIn(
             await db.select().from(Users).where(eq(Users.name, username))
         );
         if (!user) return actionResponseObj(false, "User not found!");
-        if (user.password != password)
+        if (await comparePassword(password, user.password)===false)
             return actionResponseObj(false, "Incorrect Credentials!");
 
         const token = generateToken({ id: user.id, name: user.name });

@@ -7,6 +7,7 @@ import { eq, or } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getFirstRecord } from "@/db/getFirstRecord";
 import { generateToken } from "@/lib/auth/auth";
+import { hashPassword } from "@/lib/auth/hashPassword";
 
 export async function SignUp(
     username: string,
@@ -15,9 +16,28 @@ export async function SignUp(
     confirmPassword: string
 ): Promise<actionRes> {
     try {
-        if (password != confirmPassword)
-            return actionResponseObj(false, "Passowrds Dont Match");
+        // Check username length
+        if (username.length < 3) {
+            return actionResponseObj(false, "Username must be at least 3 characters long");
+        }
 
+        // Check password length
+        if (password.length < 6) {
+            return actionResponseObj(false, "Password must be at least 6 characters long");
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            return actionResponseObj(false, "Passwords don't match");
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return actionResponseObj(false, "Invalid email format");
+        }
+
+        // Check if username or email already exists
         const existingUser = getFirstRecord(
             await db
                 .select()
@@ -25,23 +45,37 @@ export async function SignUp(
                 .where(or(eq(Users.name, username), eq(Users.email, email)))
         );
 
-        if (existingUser)
-            return actionResponseObj(false, "Username / Email already in use");
+        if (existingUser) {
+            return actionResponseObj(false, "Username or email already in use");
+        }
 
+        const hashedPassword = await hashPassword(password);
+
+        // Insert new user
         const newUser = getFirstRecord(
             await db
                 .insert(Users)
-                .values({ name: username, email, password })
+                .values({ name: username, email, password: hashedPassword })
                 .returning()
         );
 
-        const token = generateToken({id:newUser.id , name:newUser.name})
-        cookies().set('auth_token',token)
+        if (!newUser) {
+            return actionResponseObj(false, "Failed to create user");
+        }
 
-        return actionResponseObj(true)
+        // Generate and set token
+        const token = generateToken({id: newUser.id, name: newUser.name});
+        cookies().set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 // 7 days
+        });
+
+        return actionResponseObj(true, "User registered successfully");
 
     } catch (err) {
-        console.log(err);
-        return actionResponseObj(false , 'Internal Server Error!')
+        console.error("SignUp error:", err);
+        return actionResponseObj(false, 'Internal Server Error');
     }
 }

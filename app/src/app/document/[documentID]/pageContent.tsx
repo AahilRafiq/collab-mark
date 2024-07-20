@@ -30,7 +30,12 @@ interface ConnectedUser {
     username: string;
 }
 
-export default function PageContent({ userID, documentID, username , token }: Props) {
+export default function PageContent({
+    userID,
+    documentID,
+    username,
+    token,
+}: Props) {
     const { toast } = useToast();
     const [mode, setMode] = useState("single");
     const [markdown, setMarkdown] = useState("");
@@ -47,9 +52,9 @@ export default function PageContent({ userID, documentID, username , token }: Pr
             const res = await getDocument(documentID);
             if (res.success) {
                 setMarkdown(res.res);
-                crdt.initDocument(res.res)
+                crdt.initDocument(res.res);
             } else {
-                displayErrorToast(toast , res.message);
+                displayErrorToast(toast, res.message);
                 router.push("/home/0");
             }
         }
@@ -59,11 +64,11 @@ export default function PageContent({ userID, documentID, username , token }: Pr
 
     // SOCKET.IO
     useEffect(() => {
-        if(!socket.connected) socket.connect();
-        socket.on("connect", () =>{
+        if (!socket.connected) socket.connect();
+        socket.on("connect", () => {
             setIsSocketConnected(true);
-            handleConnection(socket, userID, documentID)
-    });
+            handleConnection(socket, userID, documentID);
+        });
         socket.on(msgType.sendInfo, () =>
             handleSendInfo(socket, userID, username, documentID)
         );
@@ -118,12 +123,12 @@ export default function PageContent({ userID, documentID, username , token }: Pr
             getDocument(documentID).then((res) => {
                 if (res.success) {
                     setMarkdown(res.res);
-                    crdt.initDocument(res.res)
+                    crdt.initDocument(res.res);
                 } else {
                     displayNormalToast(toast, "Error", res.message);
                 }
             });
-        })
+        });
 
         return () => {
             socket.off(msgType.sendInfo);
@@ -132,8 +137,9 @@ export default function PageContent({ userID, documentID, username , token }: Pr
             socket.off(msgType.leaveRoom);
             socket.off(msgType.updateDoc);
             socket.off("connect");
-            if(socket.connected) {socket.disconnect()
-            setIsSocketConnected(false)
+            if (socket.connected) {
+                socket.disconnect();
+                setIsSocketConnected(false);
             }
         };
     }, []);
@@ -174,17 +180,24 @@ export default function PageContent({ userID, documentID, username , token }: Pr
     }
 
     async function handleSave() {
-        const res = await saveDocument(markdown , documentID);
+        const res = await saveDocument(markdown, documentID);
         if (res.success) {
-            displayNormalToast(toast,'Save successfully', res.message)
+            displayNormalToast(toast, "Save successfully", res.message);
             socket.emit(msgType.updateDoc, documentID);
-            crdt.initDocument(markdown)
+            crdt.initDocument(markdown);
         } else {
-            displayNormalToast(toast,'Error', res.message)
+            displayNormalToast(toast, "Error", res.message);
         }
     }
 
-    if(!isSocketConnected) return <div className="p-4">Connecting To server...</div>
+    if (!isSocketConnected)
+        return (
+            <div className="p-4">
+                <h2 className="text-xl font-bold">Please wait</h2>
+                Connecting To server...this might take upto 75 seconds (due to
+                cold start)
+            </div>
+        );
     return (
         <div className="flex flex-col h-screen">
             <header className="bg-background border-b px-4 py-4 flex items-center justify-between">
@@ -207,11 +220,13 @@ export default function PageContent({ userID, documentID, username , token }: Pr
                     <ConnectedUsersDropdown users={connectedUsers} />
 
                     {/* Save and download */}
-                    <Button onClick={handleSave} variant="outline">Save</Button>
+                    <Button onClick={handleSave} variant="outline">
+                        Save
+                    </Button>
                     <Download markdown={markdown} />
 
                     {/* SHARE MODAL */}
-                    <ShareModal documentID={documentID} userID={userID}/>
+                    <ShareModal documentID={documentID} userID={userID} />
                 </div>
             </header>
             <div className="flex-1 flex">
