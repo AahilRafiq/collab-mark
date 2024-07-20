@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getDocPublicStatus } from "@/actions/document/getPublicStatus";
 import { updatePublicStatus } from "@/actions/document/updatePublicStatus";
 import { useToast } from "../ui/use-toast";
@@ -18,7 +18,7 @@ import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
 export default function ({documentID , userID}: {documentID: number , userID: number}) {
     const [showModal, setShowModal] = useState(false);
     const [isPublic, setIsPublic] = useState<boolean>();
-    const [ownerID,setOwnerID] = useState<number>(-1);
+    const [ownerID, setOwnerID] = useState<number>(-1);
     const {toast} = useToast();
 
     // FETCH PUBLIC STATUS
@@ -38,10 +38,20 @@ export default function ({documentID , userID}: {documentID: number , userID: nu
         const res = await updatePublicStatus(documentID, !isPublic);
         if (res.success) {
             setIsPublic(!isPublic);
-            displayNormalToast(toast,'Success', 'document public access updated');
+            displayNormalToast(toast, 'Success', 'document public access updated');
         } else {
             displayErrorToast(toast, res.message);
         }
+    }
+
+    function copyCurrentURL() {
+        navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+                displayNormalToast(toast, 'Success', 'URL copied to clipboard');
+            })
+            .catch((err) => {
+                displayErrorToast(toast, 'Failed to copy URL');
+            });
     }
 
     if(userID != ownerID) return <Button disabled>Share</Button>;
@@ -76,6 +86,7 @@ export default function ({documentID , userID}: {documentID: number , userID: nu
                                 Only you can view this document.
                             </div>
                         )}
+                        <Button onClick={copyCurrentURL}>Copy Document URL</Button>
                     </div>
                 </DialogContent>
             </Dialog>
