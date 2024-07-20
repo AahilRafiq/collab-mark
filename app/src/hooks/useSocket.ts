@@ -1,10 +1,13 @@
 import { io } from "socket.io-client";
 import { useState } from "react";
 
-const url = "http://localhost:5000";
+const url = process.env.NEXT_PUBLIC_WSS_URL || "http://localhost:5000";
 
-export function useSocket() {
-    const [socket] = useState(io(url, { autoConnect: false }));
+export function useSocket(token: string) {
+    const [socket] = useState(io(url, { 
+        query:{token},
+        autoConnect: false
+     }));
 
     return socket;
 }

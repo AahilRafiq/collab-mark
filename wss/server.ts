@@ -1,33 +1,46 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { msgType } from "./types/messageTypeEnum";
+import jwt from 'jsonwebtoken'
 
-interface UserRoomInfo {
-    userID: string;
-    roomID: string;
-}
-
-const socketRoomMap = new Map<string, UserRoomInfo>();
 const server = createServer();
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: process.env.APP_URL,
     },
 });
 
-const port = 5000;
+const port = process.env.PORT || 5000;
+
+io.use((socket, next) => {
+    let token = socket.handshake.query?.token;
+    if (!token || !process.env.JWT_AUTH_SECRET) {
+        return next(new Error("Authentication error"));
+    }
+
+    if(Array.isArray(token)){
+        token = token[0];
+    }
+
+    try {
+        const data = jwt.verify(token, process.env.JWT_AUTH_SECRET);
+        socket.data = data;
+        next();
+    } catch (err) {
+        return next(new Error("Authentication error"));
+    }
+})
 
 io.on("connection", (socket) => {
     console.log("A user connected");
 
     socket.on(msgType.message, (msg , roomID) => {
-        // Broadcast to all execpt sender
         socket.broadcast.to(roomID).emit(msgType.message, msg);
     });
 
     socket.on(msgType.joinRoom, (userID:string , roomID:string) => {
         socket.join(roomID)
-        socketRoomMap.set(socket.id, { userID , roomID });
+        socket.data.roomID = roomID;
         socket.to(roomID).emit(msgType.sendInfo);
         socket.emit(msgType.sendInfo)
     });
@@ -41,8 +54,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-        const {userID , roomID} = socketRoomMap.get(socket.id)!;
-        socket.broadcast.to(roomID).emit(msgType.leaveRoom, userID);
+        socket.broadcast.to(socket.data.roomID).emit(msgType.leaveRoom, socket.data.id);
         console.log("A user disconnected");
     });
 });

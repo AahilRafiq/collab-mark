@@ -20,6 +20,7 @@ interface Props {
     userID: number;
     username: string;
     documentID: number;
+    token: string;
 }
 
 interface ConnectedUser {
@@ -27,14 +28,14 @@ interface ConnectedUser {
     username: string;
 }
 
-export default function PageContent({ userID, documentID, username }: Props) {
+export default function PageContent({ userID, documentID, username , token }: Props) {
     const { toast } = useToast();
     const [mode, setMode] = useState("single");
     const [markdown, setMarkdown] = useState("");
     const [crdt] = useState(new CRDT(userID));
     const [UID] = useState(Math.floor(Math.random() * 100000000));
     const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
-    const socket = useSocket();
+    const socket = useSocket(token);
 
     // FETCH DOCUMENT
     useEffect(() => {

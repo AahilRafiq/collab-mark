@@ -20,6 +20,6 @@ export default async function({params}: Props) {
     const user = getFirstRecord(await db.select().from(Users).where(eq(Users.id , userID)).limit(1))
 
     return (
-        <ClientPage userID={userID} username={user.name} documentID={parseInt(params.documentID)}/>
+        <ClientPage userID={userID} username={user.name} token={token.value} documentID={parseInt(params.documentID)}/>
     );
 }
