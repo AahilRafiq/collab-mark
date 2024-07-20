@@ -16,6 +16,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
 import { getDocument } from "@/actions/document/getDocument";
 import { saveDocument } from "@/actions/document/saveDocument";
+import { useRouter } from "next/navigation";
+import { displayErrorToast } from "@/lib/helpers/apiRequestHelpers";
 interface Props {
     userID: number;
     username: string;
@@ -36,6 +38,7 @@ export default function PageContent({ userID, documentID, username , token }: Pr
     const [UID] = useState(Math.floor(Math.random() * 100000000));
     const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
     const socket = useSocket(token);
+    const router = useRouter();
 
     // FETCH DOCUMENT
     useEffect(() => {
@@ -45,7 +48,8 @@ export default function PageContent({ userID, documentID, username , token }: Pr
                 setMarkdown(res.res);
                 crdt.initDocument(res.res)
             } else {
-                displayNormalToast(toast, "Error", res.message);
+                displayErrorToast(toast , res.message);
+                router.push("/home/0");
             }
         }
 
@@ -203,7 +207,7 @@ export default function PageContent({ userID, documentID, username , token }: Pr
                     <Download markdown={markdown} />
 
                     {/* SHARE MODAL */}
-                    <ShareModal />
+                    <ShareModal documentID={documentID} userID={userID}/>
                 </div>
             </header>
             <div className="flex-1 flex">

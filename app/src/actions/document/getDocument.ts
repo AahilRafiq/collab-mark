@@ -14,8 +14,10 @@ export async function getDocument(documentID: number):Promise<actionRes<string>>
         if (!cookie) return actionResponseObj(false, "Unauthorized");
         const token = verifyToken(cookie.value);
         if (!token) return actionResponseObj(false, "Unauthorized");
-
         const document = getFirstRecord(await db.select().from(Documents).where(eq(Documents.id , documentID)));
+        if(!document) return actionResponseObj(false, "Document not found");
+        if(!document.public && token.id !== document.ownerID) return actionResponseObj(false, "You don't have permission to view this document");
+        
         return actionResponseObj(true ,'Document Updated', document.content);
     } catch (error) {
         console.error(error);

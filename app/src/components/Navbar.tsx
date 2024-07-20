@@ -22,7 +22,7 @@ export default async function () {
                 </span>
             </Link>
             <nav className="hidden items-center gap-2 text-sm font-medium md:flex">
-                <Link href="/home">
+                <Link href="/home/0">
                     <Button variant="ghost" color="black">
                         Home
                     </Button>

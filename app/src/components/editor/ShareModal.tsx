@@ -5,15 +5,46 @@ import {
     DialogTitle,
     DialogDescription,
     DialogHeader,
-    DialogFooter
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { getDocPublicStatus } from "@/actions/document/getPublicStatus";
+import { updatePublicStatus } from "@/actions/document/updatePublicStatus";
+import { useToast } from "../ui/use-toast";
+import { displayErrorToast } from "@/lib/helpers/apiRequestHelpers";
+import { displayNormalToast } from "@/lib/helpers/actionResHelpers";
 
-export default function () {
+export default function ({documentID , userID}: {documentID: number , userID: number}) {
     const [showModal, setShowModal] = useState(false);
-    const [isPublic, setIsPublic] = useState(false);
+    const [isPublic, setIsPublic] = useState<boolean>();
+    const [ownerID,setOwnerID] = useState<number>(-1);
+    const {toast} = useToast();
+
+    // FETCH PUBLIC STATUS
+    useEffect(() => {
+        async function fetchPublicStatus() {
+            const res = await getDocPublicStatus(documentID);
+            if (res.success) {
+                setIsPublic(res.res.isPublic);
+                setOwnerID(res.res.ownerID);
+            }
+        }
+
+        fetchPublicStatus();
+    }, []);
+
+    async function handleStatusChange() {
+        const res = await updatePublicStatus(documentID, !isPublic);
+        if (res.success) {
+            setIsPublic(!isPublic);
+            displayNormalToast(toast,'Success', 'document public access updated');
+        } else {
+            displayErrorToast(toast, res.message);
+        }
+    }
+
+    if(userID != ownerID) return <Button disabled>Share</Button>;
 
     return (
         <>
@@ -33,7 +64,7 @@ export default function () {
                             <Switch
                                 id="public-access"
                                 checked={isPublic}
-                                onCheckedChange={() => setIsPublic(!isPublic)}
+                                onCheckedChange={handleStatusChange}
                             />
                         </div>
                         {isPublic ? (
@@ -42,13 +73,10 @@ export default function () {
                             </div>
                         ) : (
                             <div className="text-muted-foreground">
-                                Only people you invite can view this document.
+                                Only you can view this document.
                             </div>
                         )}
                     </div>
-                    <DialogFooter>
-                        <Button type="submit">Save Changes</Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </>

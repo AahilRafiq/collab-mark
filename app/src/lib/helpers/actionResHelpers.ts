@@ -1,7 +1,7 @@
 export function actionResponseObj<T>(success:boolean , err?:string , res?: T) {
     return {
         success,
-        err: err,
+        message: err,
         res: res
     }
 }
